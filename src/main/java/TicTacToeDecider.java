@@ -3,19 +3,43 @@ import java.awt.*;
 import java.util.Objects;
 
 public class TicTacToeDecider extends JFrame {
+    /**
+     * 3x3 Tic Tac Toe Display Matrix
+     */
     private final JButton[][] buttons = new JButton[3][3];
+    /**
+     * 3x3 Spielbrett Matrix
+     */
     private String[][] board;
     private boolean playerCorrect;
+    /**
+     * BinarySearchTree zur Speicherung der Antworten des Spielers
+     */
     private BinarySearchTree<PlayerAnswer> answerTree;
+    /**
+     * Slider fuer Faehigkeitenstufe von K.I. fuer Spieler X
+     */
     private final JSlider sliderX = new JSlider(0,10,2);
+    /**
+     * Slider fuer Faehigkeitenstufe von K.I. fuer Spieler O
+     */
     private final JSlider sliderO = new JSlider(0,10,2);
+    /**
+     * Wie viele Antworten schon gegeben worden sind
+     */
     private int answerCount = 0;
 
+    /**
+     * Initialisiert das Spiel und die Oberflaeche
+     */
     public TicTacToeDecider() {
         initializeGUI();
         initializeGame();
     }
 
+    /**
+     * Initialisiert das Spielfeld und den Antwortbaum. Es wird außerdem das erste Spiel mithilfe der Methode simulateGame generiert.
+     */
     private void initializeGame() {
         board = new String[3][3];
         playerCorrect = false;
@@ -23,6 +47,9 @@ public class TicTacToeDecider extends JFrame {
         simulateGame();
     }
 
+    /**
+     * Initialisiert das GUI des Spiels
+     */
     private void initializeGUI() {
         JFrame frame = new JFrame("Tic Tac Toe");
         GridLayout grid = new GridLayout(4, 4);
@@ -65,6 +92,10 @@ public class TicTacToeDecider extends JFrame {
         frame.add(checkButton);
     }
 
+    /**
+     * Traversiert den übergebenen Baum im In-Order Prinzip und gibt dies aus
+     * @param tree Der Binary Search Tree der Ausgegeben werden soll
+     */
     public void outputInOrder(BinarySearchTree<PlayerAnswer> tree) {
         if (tree.getContent() !=null) {
             outputInOrder(tree.getLeftTree());
@@ -74,6 +105,13 @@ public class TicTacToeDecider extends JFrame {
         }
     }
 
+    /**
+     * Die Methode uebernimmt die Verwaltung der Spieler eingabe. Dies enthält den Dialog, um die Spieler eingabe zu erhalten.
+     * Diese Eingabe wird in den Antwortbaum eingefuegt udn dieser ausgegeben.
+     * Es wird nun mithilfe der Methode makeAIMoves das Spiel zu Ende gespielt, mit jeweils der staerksten K.I. moeglich.
+     * Es wird geprueft ob der Spieler richtig geantwortet hat oder nicht und dies wird dem Spieler ausgegeben.
+     * Danach wird mithilfe der Methode resetGame das naechste Spiel erzeugt.
+     */
     private void checkWin() {
         int playerAnswer = JOptionPane.showConfirmDialog(null,
                 "Will the AI for player X win?");
@@ -103,10 +141,22 @@ public class TicTacToeDecider extends JFrame {
         resetGame();
     }
 
+    /**
+     * Die Methode setzt die ersten Zuege der K.I. mithilfe der Methode makeAIMoves unter Beruecksictigung der auf den JSlidern eingestellten Faehigkeitsstufe
+     */
     private void simulateGame() {
         makeAIMoves(true,3,((double) sliderX.getValue()/10), ((double) sliderO.getValue()/10));
     }
 
+    /**
+     * Die Methode macht die Zuege der K.I. anhand der uebergebenen Parameter und trägt diese entsprechend in das Spielfeld ein.
+     * Dafuer werden 2 Objekte der Klasse AI zuhilfe genommen sowie die Methode der Objekte doMove
+     * @param xToStart Der Parameter gibt an ob X den naechsten Zug macht oder nicht
+     * @param movesToMake Der Parameter gibt wie viele Zuege zu machen sind
+     * @param difX Der Parameter gibt an wie stark die K.I. fuer X ist
+     * @param difO Der Parameter gibt an wie stark die K.I. fuer O ist
+     * @return Die Methode gibt zurueck welcher ob und wenn ja welcher Spieler nach Spielen der uebergebenen Spielzuege gewonnen hat. Dabei steht 0 = Keiner, 1 = X, 2 = O
+     */
     private int makeAIMoves(boolean xToStart, int movesToMake, double difX, double difO) {
         int index = 0;
 
@@ -163,6 +213,9 @@ public class TicTacToeDecider extends JFrame {
         return AI.checkForWinner(linBoard);
     }
 
+    /**
+     * Die Methode setzt das Spiel zurueck und bereitet mithilfe der Methode simulateGame eine neue Runde vor
+     */
     private void resetGame() {
         // Reset the game state for the next round
         for (int i = 0; i < 3; i++) {
@@ -176,6 +229,10 @@ public class TicTacToeDecider extends JFrame {
         simulateGame();
     }
 
+    /**
+     * Die Main Methode startet das Spiel
+     * @param args Main Methoden Notwendigkeit
+     */
     public static void main(String[] args) {
         new TicTacToeDecider();
     }
